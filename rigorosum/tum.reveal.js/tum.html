@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+		<!------------------------------------------------>
+		<!-- Fill in presentation meta information here -->
+		<!------------------------------------------------>
+        <title>TUM reveal.js template</title>
+        <meta name="description" content="TUM reveal.js template">
+        <meta name="author" content="Andreas Wolke">
+		<!------------------------------------------------>
+		
+        <meta name="apple-mobile-web-app-capable" content="no" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    	<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0, user-scalable=no">
+
+        <link rel="stylesheet" href="tum.reveal.js/css/reveal.min.css">
+        <link rel="stylesheet" href="tum.reveal.js/css/theme/tum.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="tum.reveal.js/lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'tum.reveal.js/css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+		
+		<script type="text/javascript">
+			function getDate() {
+				var today = new Date();
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+				var yyyy = today.getFullYear();
+
+				if(dd<10) {
+					dd='0'+dd
+				} 
+
+				if(mm<10) {
+					mm='0'+mm
+				} 
+
+				today = mm+'/'+dd+'/'+yyyy;
+				return today; 
+			}
+			
+			function getAuthor() { 
+			   var metas = document.getElementsByTagName('meta'); 
+
+			   for (i=0; i<metas.length; i++) { 
+				  if (metas[i].getAttribute("name") == "author") { 
+					 return metas[i].getAttribute("content"); 
+				  } 
+			   } 
+
+				return "";
+			} 
+			
+		</script>
+		
+    </head>
+
+    <body>
+    
+		<div class="tum-head">
+			<div class="title">
+				<img src="tum.reveal.js/DSS.svgz" height="100%" />
+			</div>
+			
+			<div class="logo">
+				<img src="tum.reveal.js/TUM.svgz" height="100%" />
+			</div>
+		</div>
+	
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>TUM reveal.js template</h1>
+					<p>
+						<small>presented by</small>
+						<br>
+						<big>Your Name</big><br><br>
+						<small>Presentation Date</small>
+					</p>
+				</section>		
+				
+				<section>
+					<h1>Content goes here</h1>
+				</section>		
+				
+			</div>
+		
+    </div>
+	
+	<div class="tum-foot">
+			<ul id="nav">
+				<li style="width:200px">
+					<span>
+						<script type="text/javascript">
+							document.write(document.title);
+						</script>
+					</span>
+				</li>
+				<li style="width:100px">
+					<span>
+						<script type="text/javascript">
+							document.write(getAuthor());
+						</script>
+					</span>
+				</li>
+				<li style="width:150px"><span>
+					<script type="text/javascript">
+							document.write(getDate());
+					</script>
+				</span></li>
+			</ul>
+		</div>
+		
+			<div class="slide-number-background">
+		</div>
+		
+		
+		<!-- Script and configuration section -->
+        <script src="tum.reveal.js/lib/js/head.min.js"></script>
+        <script src="tum.reveal.js/js/reveal.min.js"></script>
+		
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: false,
+                progress: false,
+                history: true,
+                center: false,
+                slideNumber: true,
+				embedded: true,
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+                math: {
+                    mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+                    config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+                },
+                
+                // Parallax scrolling
+                // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal.js/reveal-parallax-1.jpg',
+                // parallaxBackgroundSize: '2100px 900px',
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'tum.reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'tum.reveal.js/plugin/math/math.js', async: true },
+                    { src: 'tum.reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'tum.reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'tum.reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'tum.reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'tum.reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+    </body>
+
+</html>
