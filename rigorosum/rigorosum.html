@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+		<!------------------------------------------------>
+		<!-- Fill in presentation meta information here -->
+		<!------------------------------------------------>
+        <title>Efficient VM Allocation in Virtualized Data Centers</title>
+        <meta name="description" content="Dissertation Andreas Wolk">
+        <meta name="author" content="Andreas Wolke">
+		<!------------------------------------------------>
+		
+        <meta name="apple-mobile-web-app-capable" content="no" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    	<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0, user-scalable=no">
+
+        <link rel="stylesheet" href="tum.reveal.js/css/reveal.min.css">
+        <link rel="stylesheet" href="tum.reveal.js/css/theme/tum.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="tum.reveal.js/lib/css/zenburn.css">
+
+		<!-- Custom CSS stylesheets -->
+		<style>
+			.optimal {
+				background: #449956; 
+			}
+			
+			.bad {
+				background: #c94d4d; 
+			}
+			
+			.average {
+				background: #2B5C89; 
+			}
+		</style>
+		
+        <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'tum.reveal.js/css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+		
+		<script type="text/javascript">
+			function getDate() {
+				var today = new Date();
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+				var yyyy = today.getFullYear();
+
+				if(dd<10) {
+					dd='0'+dd
+				} 
+
+				if(mm<10) {
+					mm='0'+mm
+				} 
+
+				today = mm+'/'+dd+'/'+yyyy;
+				return today; 
+			}
+			
+			function getAuthor() { 
+			   var metas = document.getElementsByTagName('meta'); 
+
+			   for (i=0; i<metas.length; i++) { 
+				  if (metas[i].getAttribute("name") == "author") { 
+					 return metas[i].getAttribute("content"); 
+				  } 
+			   } 
+
+				return "";
+			} 
+			
+		</script>
+		
+    </head>
+
+    <body>
+    
+		<div class="tum-head">
+			<div class="title">
+				<img src="tum.reveal.js/DSS.svg" height="100%" />
+			</div>
+			
+			<div class="logo">
+				<img src="tum.reveal.js/TUM.svg" height="100%" />
+			</div>
+		</div>
+	
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<div style="padding-top:15em">
+						<h1>Efficient VM Allocation in Virtualized Data Centers</h1>
+						<p>
+							<big>Andreas Wolke</big><br><br>
+						</p>
+					<div>
+				</section>		
+				
+				<section>
+					<h1>Average CPU utilziation in data centers</h1>
+					<div style="float:">
+						<div style="clear:left; float:left; width: 60%">
+							<img src="histogram.svg" width="80%"/>
+							<small>Image source: Barroso, L. A., & Hölzle, U. (2007). The Case for Energy-Proportional Computing. Computer, 40(12), 33‐37. doi:10.1109/MC.2007.443</small>
+						</div>
+						<div style="clear:right; float:right; width: 40%; padding-top:1em">
+							<p>Current avg. CPU utilization</p>
+							<p style="color:#cc4125; font-size:50pt; font-weight:bold;">~ 35%</p>
+							
+							<p style="padding-top:1em">Target avg. CPU utilization</p>
+							<p style="color:#6aa84f; font-size:50pt; font-weight:bold;">~ 85%</p>
+						</div>
+					</div>
+					
+				</section>		
+				
+				<section>
+					<h1>Leveraging  static and dynamic controllers</h1>
+					<div>
+						<img src="automatic allocation.svg" />
+							
+						<div style="position:absolute; right:30px; top:120px; width:50%">
+							<p>Data center energy efficiency and consolidation are top priorities of data center managers worldwide!</p>
+							<small>(Uptime Institute - Top 10 Data Center Technology Priorities for 2013), (2010 - 2013: NASCIO's Top 10 Priorities for State CIOs)</small>
+						</div>
+					</div>
+				</section>
+				
+				<section>
+					<h1>Controllers considered</h1>
+					<div style="clear:both">
+						<div style="clear:left; float:left; width: 50%">
+							<h2>Static Controllers</h2>
+							<ul style="">
+								<li>Round-Robin</li>
+								<li>Vector-Packing</li>
+								<li>Integer programming</li>
+							</ul>
+						</div>
+						<div style="clear:right; float:right; width: 50%">
+							<img src="ssapv.svg"/>
+						</div>
+					</div>
+					
+					<div style="clear:both">
+						<div style="clear:left; float:left; width: 50%">
+							<h2>Dynamic Controllers</h2>
+							<ul>
+								<li>Reactive</li>
+								<li>Proactive</li>
+							</ul>
+						</div>
+						<div style="clear:right; float:right; width: 50%">
+							<img src="dynamic.svg" width="130%"/>
+						</div>
+					</div>
+				</section>
+				
+				<section>
+					<h1>Experimental infrastructure</h1>
+					<center>
+						<img src="testbed infrastructure.svg" width="100%" />
+					</center>
+				</section>
+				
+				<section>
+					<h1>Performance metrics considered</h1>
+					
+					<div style="clear:both; padding-top:50px">
+						<div style="clear:left; float:left; width: 46%">
+							<ol>
+								<li>
+								Average server demand<br/>
+								Weighted arithmetic mean
+								</li>
+								
+								<li style="padding-top:1em">
+								Service quality  <br/>
+								% of successful application requests
+								</li>
+								
+								<li style="padding-top:1em">
+								Migrations <br/>
+								# of triggered VM live-migratinos
+								</li>
+							<p>
+								
+							</p>
+						</div>
+						
+						<div style="clear:right; float:right; width: 54%">
+							<img style="display:block" src="average_server_calculation.svg" width="100%"/>
+						</div>
+					</div>
+				</section>
+				
+				<section>
+					<center>
+						<p style="background:#cc4125; padding:5px; render:bock;">
+							Static consolidation often outperforms dynamic consolidation <br/>
+						</p>
+					</center>
+						
+						
+					<div style="clear:both">
+						<div style="clear:left; float:left; width: 50%">
+							<h2>Static consolidation</h2>
+							<ul>
+								<li>No VM migrations</li>
+								<li>Overbooking is sometimes good</li>
+								<li>Robust against workload deviations</li>
+								<br/>
+								<li>Consolidate in batches</li>
+								<li>Vector packing</li>
+							</ul>
+								
+							<h2 style="padding-top:2em">Dynamic controllers</h2>
+							<ul>
+								<li>Good for unknown workload</li>
+								<li>Require buffer capacity</li>
+								<li>Migrations are bad</li>
+								<li>Time series forecasting reduces migrations</li>
+							</ul>
+						</div>
+						
+						<div style="clear:right; float:right; width: 50%;">
+							<img style="display:block; margin-left: auto; margin-right: 0" src="vpack_allocation-density_vs_vm-count.svg" width="80%"/><img style="display:block;  margin-left: auto; margin-right: 0" src="vpack_pattern-length_vs_servers.svg" width="80%"/> 
+						</div>
+					</div>
+				</section>
+						
+				<section>
+					<h1>What about dynamic scenarios</h1>
+					<center>
+						<img src="dynamic allocation.svg" width="100%" />
+					</center>
+				</section>
+			
+			<!--
+				<section>
+					<h1>Parametrization</h1>
+					<div style="clear:both; width:100%">
+						<div style="float:left; width:49%">
+								<ul>
+									<li style="padding-top:1em"><strong>Placement</strong>
+										<ul>
+											<li><strong>Conservative</strong></li>
+											<li><strong>Aggressive</strong></li>
+											<li style="padding-top:1em">Random</li>
+											<li>First-Fit, Best-Fit, Worst-Fit, Next-Fit</li>
+											<li>Dot-Product</li>
+											<li>L2</li>
+										</ul>
+									</li>
+									
+									<li style="padding-top:1em"><strong>Dynamic</strong>
+										<ul>
+											<li>None</li>
+											<li>KMControl / TControl</li>
+											<li>DSAP+</li>
+										</ul>
+									</li>
+								</ul>
+						</div>
+						
+						
+						<div style="float:right; width:49%; padding-top:6em">
+							<p style="padding-top:1em; float:right">Controllers combinations <font style="font-size:50pt; font-weight:bold; padding-left:0em">56</font></p>
+							
+							
+							<p style="padding-top:2em; float:right">Schedules <font style="font-size:50pt; font-weight:bold; padding-left:0em">20</font></p>
+							
+						</div>
+					</div>
+				</section>
+				-->
+			
+			
+				<section>
+					<center>
+						<p style="background:#cc4125; padding:5px; render:bock;">
+							Placement controllers should be combined with dynamic controllers<br/>
+							and should opt for a dense VM allocation
+						</p>
+					</center>
+							
+					<div style="float:left; width:45%">
+						<h2>Placement</h2>
+						<ul>
+							<li>Establish dense allocations</li>
+							<li>Simple heuristics are sufficient</li>
+							<li>Combine with dynamic controllers</li>
+						</ul>
+							
+						<h2 style="padding-top:2em">Dynamic controllers</h2>
+						<ul>
+							<li>Increase allocation density</li>
+							<li>Negligible effects on service quality</li>
+							<li>Migration count depends on placement controller</li>
+						</ul>
+					</div>
+					
+					<div style="float:right; width:49%;">
+						<h2 style="padding-bottom:0.7em">Average experimental results</h2>
+						<TABLE border=1 style="width:100%; margin: 0 auto">
+						<TR> 
+							<TH> Controller </TH> 
+							<TH> Type </TH> 
+							<TH style="width:50px"> $\overline{\text{SD}}$ </TH> 
+							<TH style="width:50px"> $\sigma\text{SD}$ </TH> 
+							<TH style="width:50px; border-left:solid 3px white; padding-left:5px;"> $\overline{\text{MG}}$ </TH> 
+							<TH style="width:50px"> $\sigma\text{MG}$ </TH> 
+						</TR>
+						  <TR class="optimal"> <TD> D/FF/KM </TD> <TD> Aggr. Pl. & Dyn. </TD> <TD align="right"> 2.40 </TD> <TD align="right"> 0.24 </TD> <TD align="right" style="border-left:solid 3px white; padding-left:5px;"> 7.60 </TD> <TD align="right"> 1.68 </TD>
+						  
+						  <TR class="optimal"> <TD> D/L2/KM </TD> <TD> Aggr. Pl. & Dyn. </TD> <TD align="right"> 2.66 </TD> <TD align="right"> 0.37 </TD> <TD align="right" style="border-left:solid 3px white; padding-left:5px;"> 6.07 </TD> <TD align="right"> 1.53 </TD> </TR>
+						  
+						  <TR> <TD> R/WF/TC </TD> <TD> Cons. Pl. & Dyn. </TD> <TD align="right"> 2.79 </TD> <TD align="right"> 0.31 </TD> <TD align="right" style="border-left:solid 3px white; padding-left:5px;"> 26.42 </TD> <TD align="right"> 2.25 </TD> </TR>
+						  
+						  <TR> <TD> D/WF/-- </TD> <TD> Aggr. Pl. </TD> <TD align="right"> 3.20 </TD> <TD align="right"> 0.34 </TD> <TD align="right" style="border-left:solid 3px white; padding-left:5px;"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+						  
+						  <TR class="bad"> <TD> R/WF/KM </TD> <TD> Cons. Pl. & Dyn. </TD> <TD align="right"> 3.54 </TD> <TD align="right"> 0.38 </TD> <TD align="right" style="border-left:solid 3px white; padding-left:5px;"> 19.59 </TD> <TD align="right"> 2.43 </TD> </TR>
+						   </TABLE>
+						   
+						   <div style="clear:left; float:left; width: 100%; padding-top:1em">
+							<small>SD = Server Demand <br/>MG = VM Migrations</small>
+						</div>
+					</div>
+				</section>
+				
+				<section>
+					<h1>Simulation results (average server demand)</h1>
+					
+					<center>
+						<img src="mkII_heatmap_avg_srv_count.svg" />
+					</center>
+				</section>
+			
+				<section>	
+					<h2>Publications part 1</h2>
+					<small>
+						<ul>
+							<li>A. Wolke, M. Bichler, and S. Thomas, “Planning vs. dynamic control: Resource allocation in corporate clouds,” Accepted at IEEE Transactions on Cloud Computing, 2014.</li>
+							<li>A. Wolke and L. Ziegler, “Evaluating dynamic resource allocation strategies in virtualized data centers,” in Cloud Computing (CLOUD), 2014 IEEE 7th International Conference on, 2014.</li>
+							<li>A. Wolke and C. Pfeiffer, “Improving enterprise VM consolidation with high-dimensional load profiles,” in Cloud Engineering (IC2E), 2014 IEEE International Conference on, 2014.</li>
+							<li>M. Seibold, A. Wolke, M. Albutiu, M. Bichler, A. Kemper, and T. Setzer, “Efficient Deployment of Main-Memory DBMS in Virtualized Data Centers,” in Cloud Computing (CLOUD), 2012 IEEE 5th International Conference on, 2012, pp. 311–318.</li>
+							<li>T. Setzer and A. Wolke, “Virtual machine re-assignment considering migration overhead,” in Network Operations and Management Symposium (NOMS), 2012 IEEE, 2012, pp. 631–634.</li>
+						</ul>
+					</small>
+						
+					<h2>Publications part 2</h2>
+					<small>
+						<ul>
+							<li>A. Wolke, T.-A. Boldbaatar, C. Pfeiffer, and M. Bichler, “More than bin packing: A large-scale experiment on dynamic resource allocation in IaaS clouds,” Under Rev. at Information Systems, 2015.</li>
+						</ul>
+					</small>
+					
+					<h2>Other</h2>
+					<small>
+						<ul>
+							<li>A. Wolke and D. Srivastav, “Monitoring and Controlling Research Experiments in Cloud Testbeds,” in 2013 IEEE Sixth International Conference on Cloud Computing, 2013, pp. 962–963.</li>
+							<li>J. Kroß and A. Wolke, “Cloudburst - simulating workload for IaaS clouds,” in Cloud Computing (CLOUD), 2014 IEEE 7th International Conference on, 2014.</li>
+						</ul>
+					</small>
+				</section>
+			
+				<section>
+					<center style="position:absolute; top: 280px; right:50px; font-size:70px">
+						END
+					</center>
+				</section>
+			</div>
+		
+    </div>
+	
+	<div class="tum-foot">
+			<ul id="nav">
+				<li style="width:300px">
+					<span>
+						<script type="text/javascript">
+							document.write(document.title);
+						</script>
+					</span>
+				</li>
+				<li style="width:100px">
+					<span>
+						<script type="text/javascript">
+							document.write(getAuthor());
+						</script>
+					</span>
+				</li>
+				<li style="width:150px"><span>
+					<script type="text/javascript">
+							document.write(getDate());
+					</script>
+				</span></li>
+			</ul>
+		</div>
+		
+			<div class="slide-number-background">
+		</div>
+		
+		
+		<!-- Script and configuration section -->
+        <script src="tum.reveal.js/lib/js/head.min.js"></script>
+        <script src="tum.reveal.js/js/reveal.min.js"></script>
+		
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: false,
+                progress: true,
+                history: true,
+                center: false,
+                slideNumber: true,
+				embedded: true,
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+                math: {
+                    mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+                    config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+                },
+                
+                // Parallax scrolling
+                // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal.js/reveal-parallax-1.jpg',
+                // parallaxBackgroundSize: '2100px 900px',
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'tum.reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'tum.reveal.js/plugin/math/math.js', async: true },
+                    { src: 'tum.reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'tum.reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'tum.reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'tum.reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'tum.reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+    </body>
+
+</html>
